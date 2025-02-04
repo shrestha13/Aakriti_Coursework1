@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>✨To-Do List✨</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(to right, #f6d8ed, #fad0c4);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      background: #ffffff;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 50%;
+      max-width: 500px;
+      padding: 30px;
+      text-align: center;
+      position: relative;
+    }
+
+    h1 {
+      color: #ff80ab;
+      font-size: 32px;
+      margin-bottom: 20px;
+    }
+
+    .task-input {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .input-group {
+      display: flex;
+      gap: 10px;
+      width: 100%;
+      justify-content: center;
+    }
+
+    input,
+    select {
+      padding: 10px;
+      border: 2px solid #ff80ab;
+      border-radius: 10px;
+      font-size: 16px;
+      background: #ffe4e1;
+      color: #d81b60;
+      outline: none;
+      transition: all 0.3s;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: #d81b60;
+      box-shadow: 0 0 5px rgba(216, 27, 96, 0.5);
+    }
+
+    input {
+      width: 70%;
+    }
+
+    select {
+      width: 30%;
+    }
+
+    .btn {
+      background-color: #ff80ab;
+      color: white;
+      padding: 12px;
+      width: 100%;
+      border: none;
+      border-radius: 10px;
+      font-size: 18px;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 10px;
+    }
+
+    .btn:hover {
+      background-color: #d81b60;
+    }
+
+    .tasks {
+      width: 100%;
+      margin-top: 20px;
+      padding-top: 10px;
+      border-top: 3px solid #ff80ab;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .task {
+      background: rgba(255, 182, 193, 0.8);
+      padding: 15px;
+      border-radius: 10px;
+      color: #880e4f;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .task .delete-btn {
+      background: #ff80ab;
+      border: none;
+      color: white;
+      border-radius: 50%;
+      padding: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .task:hover .delete-btn {
+      background: #d81b60;
+    }
+
+    .task.completed {
+      text-decoration: line-through;
+      color: #888;
+    }
+
+    .task.completed .delete-btn {
+      background: #888;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>✨To-Do List✨</h1>
+
+    <!-- Form Start -->
+    <form id="todoForm" method="post" action="save_todo.php">
+      <input type="text" name="task" id="taskInput" placeholder="Add a new task..." required><br><br>
+
+      <div class="input-group">
+        <input type="text" name="category" placeholder="Category (optional)">
+        <select name="priority">
+          <option value="low">Low</option>
+          <option value="medium">Medium</option>
+          <option value="high">High</option>
+        </select>
+      </div><br>
+
+      <button class="btn" type="submit">Add Task</button>
+    </form>
+    <!-- Form End -->
+
+    <div class="tasks" id="taskList"></div>
+  </div>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const todoForm = document.getElementById("todoForm");
+      const taskInput = document.getElementById("taskInput");
+      const taskList = document.getElementById("taskList");
+
+      function getTasksFromStorage() {
+        return JSON.parse(localStorage.getItem("tasks")) || [];
+      }
+
+      function saveTasksToStorage(tasks) {
+        localStorage.setItem("tasks", JSON.stringify(tasks));
+      }
+
+      function renderTasks() {
+        taskList.innerHTML = "";
+        const tasks = getTasksFromStorage();
+        tasks.forEach((task, index) => {
+          const taskElement = document.createElement("div");
+          taskElement.classList.add("task");
+          if (task.completed) {
+            taskElement.classList.add("completed");
+          }
+          taskElement.innerHTML = `
+                <span>${task.text} (${task.priority})</span>
+                <button class="delete-btn" data-index="${index}">❌</button>
+            `;
+          taskElement.addEventListener("click", () => toggleTaskCompletion(index));
+          taskList.appendChild(taskElement);
+        });
+      }
+
+      function toggleTaskCompletion(index) {
+        const tasks = getTasksFromStorage();
+        tasks[index].completed = !tasks[index].completed;
+        saveTasksToStorage(tasks);
+        renderTasks();
+      }
+
+      function addTask(event) {
+        event.preventDefault();
+        const taskText = taskInput.value.trim();
+        const priority = todoForm.priority.value;
+        if (taskText === "") return;
+        const tasks = getTasksFromStorage();
+        tasks.push({ text: taskText, priority: priority, completed: false });
+        saveTasksToStorage(tasks);
+        taskInput.value = "";
+        renderTasks();
+      }
+
+      function deleteTask(event) {
+        if (!event.target.classList.contains("delete-btn")) return;
+        const index = event.target.getAttribute("data-index");
+        const tasks = getTasksFromStorage();
+        tasks.splice(index, 1);
+        saveTasksToStorage(tasks);
+        renderTasks();
+      }
+
+      todoForm.addEventListener("submit", addTask);
+      taskList.addEventListener("click", deleteTask);
+      renderTasks();
+    });
+  </script>
+</body>
+
+</html>

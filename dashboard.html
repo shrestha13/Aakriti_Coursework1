@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wellness App - Homepage</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  body {
+    font-family: 'Poppins', sans-serif;
+  }
+
+  /* Positioning the logout button in the top-right corner */
+  .logout-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+  }
+
+  .logout-button {
+    background-color: #ff80ab;
+    /* Soft pink */
+    color: white;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 25px;
+    /* Rounded corners for cuteness */
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+  }
+
+  .logout-button:hover {
+    background-color: #d81b60;
+    /* Darker pink on hover */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Confirmation Modal */
+  .confirmation-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+
+  .modal-content {
+    background-color: white;
+    padding: 20px 30px;
+    text-align: center;
+    border-radius: 20px;
+    width: 80%;
+    max-width: 350px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  .modal-content h3 {
+    font-size: 18px;
+    margin-bottom: 20px;
+    color: #ff80ab;
+    /* Matching soft pink */
+    font-weight: bold;
+  }
+
+  .modal-content img {
+    width: 80%;
+    height: auto;
+    border-radius: 12px;
+    margin-bottom: 20px;
+  }
+
+  .modal-buttons {
+    margin-top: 10px;
+  }
+
+  .modal-buttons button {
+    padding: 8px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    margin: 5px;
+    border-radius: 15px;
+    border: none;
+    transition: all 0.3s ease;
+  }
+
+  .yes-button {
+    background-color: #ff80ab;
+    color: white;
+  }
+
+  .yes-button:hover {
+    background-color: #d81b60;
+  }
+
+  .no-button {
+    background-color: #ff80ab;
+    color: white;
+  }
+
+  .no-button:hover {
+    background-color: #d81b60;
+  }
+
+  /* Tip Modal */
+  .tip-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+  }
+
+  .tip-content {
+    background-color: #fff;
+    padding: 20px 30px;
+    border-radius: 15px;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  .tip-content h3 {
+    color: #ff80ab;
+    font-size: 20px;
+    font-weight: bold;
+  }
+
+  .tip-content p {
+    margin-top: 15px;
+    font-size: 16px;
+    color: #444;
+  }
+
+  .tip-content button {
+    background-color: #ff80ab;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 15px;
+    font-size: 14px;
+    margin-top: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .tip-content button:hover {
+    background-color: #d81b60;
+  }
+</style>
+</head>
+
+<body>
+  <div class="background">
+    <div class="contain">
+      <!-- Mood Tracker Section -->
+      <div class="mood-section">
+        <h2>How are you feeling today?</h2>
+        <form id="mood-form" method="post" action="dashboard.php" onsubmit="showTip(event)">
+          <div class="mood-icons">
+            <input type="radio" id="happy" name="mood" value="happy" required>
+            <label for="happy"><img src="happy.jpeg" alt="Happy"></label>
+
+            <input type="radio" id="neutral" name="mood" value="neutral">
+            <label for="neutral"><img src="stressed.jpeg" alt="Stressed"></label>
+
+            <input type="radio" id="sad" name="mood" value="sad">
+            <label for="sad"><img src="sad.jpeg" alt="Sad"></label>
+
+            <input type="radio" id="anxiety" name="mood" value="anxiety">
+            <label for="anxiety"><img src="anxiety.jpeg" alt="Anxiety"></label>
+
+            <input type="radio" id="tired" name="mood" value="tired">
+            <label for="tired"><img src="Tired Girl.jpeg" alt="Tired"></label>
+          </div>
+          <button type="submit" class="mood-button">Record Mood</button>
+        </form>
+      </div>
+
+      <!-- CTA Buttons -->
+      <div class="cta-buttons">
+        <a href="journaling.php" class="cta-button">Start Journaling</a>
+        <a href="todo.html" class="cta-button">Start To-Do List</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Log Out Button -->
+  <div class="logout-container">
+    <button class="logout-button" onclick="showConfirmationModal()">Log Out</button>
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div id="confirmationModal" class="confirmation-modal">
+    <div class="modal-content">
+      <h3>Are you sure you want to log out?</h3>
+      <img src="logout.png" alt="Confirmation Image" /> <!-- Replace with your image -->
+      <div class="modal-buttons">
+        <button class="yes-button" onclick="logout()">Yes</button>
+        <button class="no-button" onclick="closeModal()">No</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mood Tip Modal -->
+  <div id="tipModal" class="tip-modal">
+    <div class="tip-content">
+      <h3>Wellness Tip:</h3>
+      <p id="tipText"></p>
+      <button onclick="closeTipModal()">Close</button>
+    </div>
+  </div>
+  <canvas id="moodChart" width="150" height="150"></canvas>
+  <script>
+    // Show the confirmation modal when log out is clicked
+    function showConfirmationModal() {
+      document.getElementById('confirmationModal').style.display = 'flex';
+    }
+    // Close the confirmation modal
+    function closeModal() {
+      document.getElementById('confirmationModal').style.display = 'none';
+    }
+    // Handle logout
+    function logout() {
+      window.location.href = 'logout.php';
+    }
+    document.addEventListener("DOMContentLoaded", function () {
+      const moodForm = document.getElementById("mood-form");
+      let moodSelected = false;
+
+      moodForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+        if (!moodSelected) {
+          let mood = document.querySelector('input[name="mood"]:checked')?.value;
+          if (!mood) return;
+
+          let tipMessage = "";
+          switch (mood) {
+            case "happy":
+              tipMessage = "Keep spreading the joy! Enjoy the little things.";
+              break;
+            case "neutral":
+              tipMessage = "Try doing something you enjoy!";
+              break;
+            case "sad":
+              tipMessage = "It's okay to feel sad. Be kind to yourself.";
+              break;
+            case "anxiety":
+              tipMessage = "Practice deep breathing.";
+              break;
+            case "tired":
+              tipMessage = "Rest is essential!";
+              break;
+            default:
+              tipMessage = "Take care of yourself today!";
+          }
+
+          document.getElementById("tipText").innerText = tipMessage;
+          document.getElementById("tipModal").style.display = "flex"; // Show tip modal
+
+          moodSelected = true; // Mark that the tip was shown
+        }
+      });
+    });
+    // Close tip modal & submit form
+    function closeTipModal() {
+      // Hide the tip modal
+      document.getElementById("tipModal").style.display = "none";
+      // Delay the form submission and redirection for 5 seconds
+      setTimeout(function () {
+        // Submit the form after the delay
+        document.getElementById("mood-form").submit();
+      }, 5000); // 5000 ms = 5 seconds delay before submission
+    }
+  </script>
+
+</body>
+
+</head>
